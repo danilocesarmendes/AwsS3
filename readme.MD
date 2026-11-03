@@ -12,8 +12,8 @@ Este projeto é um utilitário em **Java** para deletar arquivos do **Amazon S3*
 Este utilitário executa uma operação **destrutiva**. Teste primeiro em um bucket de teste.
 
 - Não há verificação prévia de existência do objeto: o S3 trata a remoção de uma chave inexistente como sucesso.
-- Não há modo `dry-run`.
-- O agrupamento por bucket ainda não é confiável quando o mesmo arquivo mistura buckets diferentes. Use um arquivo de entrada por bucket.
+- Use `--dry-run` para listar o que seria removido, sem chamar o S3.
+- Cada requisição ao S3 contém chaves de um único bucket, então um mesmo arquivo pode misturar buckets.
 
 ---
 
@@ -43,6 +43,12 @@ export AWS_REGION=us-east-1
 # build do projeto
 mvn clean package
 
-# executar o projeto
+# simular (nada é removido)
+java -jar target/AwsS3-1.0-SNAPSHOT.jar --dry-run /home/usuario/arquivos/s3-files.txt
+
+# executar de verdade
 java -jar target/AwsS3-1.0-SNAPSHOT.jar /home/usuario/arquivos/s3-files.txt
+
+# testes
+mvn test
 ```
