@@ -1,54 +1,55 @@
-# AwsS3 – Batch Delete de Arquivos no S3
+# AwsS3 – Batch Delete for Amazon S3
 
-Este projeto é um utilitário em **Java** para deletar arquivos do **Amazon S3** a partir de uma lista de URLs, com:
+A **Java** command-line utility that deletes files from **Amazon S3** based on a list of URLs, with:
 
-- ✅ Leitura de arquivo `.txt`
-- ✅ Delete em lotes de até **100 arquivos**
-- ✅ Uso de **variáveis de ambiente** para credenciais AWS
-- ✅ Compatível com **AWS SDK v2**
+- ✅ Input read from a `.txt` file (one URL per line)
+- ✅ Deletes in batches of up to **100 objects**
+- ✅ Keys grouped **per bucket** (each request targets a single bucket)
+- ✅ `--dry-run` mode that lists what would be deleted without calling S3
+- ✅ AWS credentials from **environment variables**
+- ✅ Built on **AWS SDK v2**
+- ✅ Unit tests (JUnit 5 + Mockito) and CI with GitHub Actions
 
-## ⚠️ Aviso e limitações conhecidas
+## ⚠️ Warning and known limitations
 
-Este utilitário executa uma operação **destrutiva**. Teste primeiro em um bucket de teste.
+This tool performs a **destructive** operation. Try it on a test bucket first.
 
-- Não há verificação prévia de existência do objeto: o S3 trata a remoção de uma chave inexistente como sucesso.
-- Use `--dry-run` para listar o que seria removido, sem chamar o S3.
-- Cada requisição ao S3 contém chaves de um único bucket, então um mesmo arquivo pode misturar buckets.
+- There is no prior existence check: S3 treats deleting a non-existent key as a success.
+- Supported URL formats: `s3://bucket/key`, path-style (`https://s3.<region>.amazonaws.com/bucket/key`) and virtual-hosted-style (`https://bucket.s3.amazonaws.com/key`).
+- The exit code is non-zero when there are failures or invalid URLs.
 
 ---
 
-## 📋 Pré-requisitos
+## 📋 Prerequisites
 
-Antes de rodar o projeto, você precisa ter instalado:
-
-- **Java 17 ou superior** (recomendado: 17 ou 21)
+- **Java 17 or higher** (recommended: 17 or 21)
 - **Apache Maven 3.8+**
-- Conta AWS com permissão para deletar objetos no S3
+- An AWS account with permission to delete objects in S3
 
-Verifique:
+Check your setup:
 
 ```bash
 java -version
 mvn -version
 ```
 
-## Execução
+## Usage
 
 ```bash
-# configurar variáveis de ambiente com suas chaves
-export AWS_ACCESS_KEY_ID=SEU_ACCESS_KEY
-export AWS_SECRET_ACCESS_KEY=SEU_SECRET_KEY
+# configure your credentials and region
+export AWS_ACCESS_KEY_ID=YOUR_ACCESS_KEY
+export AWS_SECRET_ACCESS_KEY=YOUR_SECRET_KEY
 export AWS_REGION=us-east-1
 
-# build do projeto
+# build
 mvn clean package
 
-# simular (nada é removido)
-java -jar target/AwsS3-1.0-SNAPSHOT.jar --dry-run /home/usuario/arquivos/s3-files.txt
+# simulate (nothing is deleted)
+java -jar target/AwsS3-1.0-SNAPSHOT.jar --dry-run /path/to/s3-files.txt
 
-# executar de verdade
-java -jar target/AwsS3-1.0-SNAPSHOT.jar /home/usuario/arquivos/s3-files.txt
+# run for real
+java -jar target/AwsS3-1.0-SNAPSHOT.jar /path/to/s3-files.txt
 
-# testes
+# tests
 mvn test
 ```
